@@ -1,0 +1,33 @@
+<script setup lang="ts">
+import { useLineStore } from './stores/lineStore';
+import FileDropZone from './components/FileDropZone.vue';
+import Dashboard from './components/Dashboard.vue';
+
+const store = useLineStore();
+</script>
+
+<template>
+  <div class="min-h-screen bg-neutral-900 text-white font-sans selection:bg-indigo-500/30">
+    <header class="bg-neutral-800 border-b border-neutral-700 py-4 px-6 fixed w-full top-0 z-10 flex items-center justify-between backdrop-blur-md bg-opacity-80">
+      <div class="flex items-center gap-3">
+        <img src="/favicon.jpg" alt="Logo" class="w-10 h-10 rounded-lg shadow-lg">
+        <h1 class="text-xl font-bold tracking-tight">Line 聊天分析器</h1>
+      </div>
+      <div v-if="store.messages.length" class="flex items-center gap-4 text-sm">
+         <span class="text-gray-400">已載入 {{ store.stats.totalMessages }} 則訊息</span>
+         <button @click="store.reset()" class="text-red-400 hover:text-red-300 transition-colors">重置</button>
+      </div>
+    </header>
+
+    <main class="pt-24 px-6 pb-12 max-w-7xl mx-auto">
+      <div v-if="!store.messages.length" class="h-[calc(100vh-150px)] flex flex-col items-center justify-center">
+        <FileDropZone />
+        <p class="mt-8 text-gray-500 max-w-md text-center text-sm">
+          您的資料僅會在瀏覽器中處理，<span class="text-indigo-400 font-medium whitespace-nowrap">絕不會上傳</span> 到任何伺服器。
+        </p>
+      </div>
+
+      <Dashboard v-else />
+    </main>
+  </div>
+</template>
