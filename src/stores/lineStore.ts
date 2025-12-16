@@ -118,10 +118,10 @@ export const useLineStore = defineStore('line', () => {
                 const dates = result.messages.map(m => m.date.getTime());
                 const minDate = new Date(Math.min(...dates));
                 const maxDate = new Date(Math.max(...dates));
-                
-                // 設定預設日期範圍
-                dateRange.value.start = minDate.toISOString().split('T')[0];
-                dateRange.value.end = maxDate.toISOString().split('T')[0];
+
+                // 設定預設日期範圍（確保型別為 string | null）
+                dateRange.value.start = minDate.toISOString().split('T')[0] ?? null;
+                dateRange.value.end = maxDate.toISOString().split('T')[0] ?? null;
             }
 
             return result;
