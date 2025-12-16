@@ -1,10 +1,15 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { type Message, parseLineChat } from '../utils/lineParser';
+import { type Message, type ParseResult, parseLineChat } from '../utils/lineParser';
 
 export const useLineStore = defineStore('line', () => {
     const messages = ref<Message[]>([]);
     const loading = ref(false);
+    
+    // 解析結果統計
+    const parseStats = ref<ParseResult['stats'] | null>(null);
+    const parseErrors = ref<string[]>([]);
+    const hasParseWarnings = computed(() => parseErrors.value.length > 0 || (parseStats.value?.skippedLines ?? 0) > 0);
 
     // Filters
     const dateRange = ref<{ start: string | null; end: string | null }>({ start: null, end: null });
@@ -79,16 +84,47 @@ export const useLineStore = defineStore('line', () => {
         };
     });
 
-    function loadFile(fileContent: string) {
+    function loadFile(fileContent: string): ParseResult {
         loading.value = true;
         try {
-            const parsed = parseLineChat(fileContent);
-            messages.value = parsed;
+            const result = parseLineChat(fileContent);
+            messages.value = result.messages;
+            parseStats.value = result.stats;
+            parseErrors.value = result.errors;
+
+            // 在 console 輸出詳細的解析報告
+            console.group('📊 LINE 聊天記錄解析報告');
+            console.log(`總行數: ${result.stats.totalLines}`);
+            console.log(`日期標頭: ${result.stats.dateHeaders}`);
+            console.log(`成功解析: ${result.stats.parsedMessages} 則訊息`);
+            console.log(`空白行: ${result.stats.emptyLines}`);
+            console.log(`跳過/失敗: ${result.stats.skippedLines}`);
+            
+            if (result.stats.failedLines.length > 0) {
+                console.group('❌ 無法解析的行:');
+                result.stats.failedLines.forEach(line => console.warn(line));
+                console.groupEnd();
+            }
+            
+            if (result.errors.length > 0) {
+                console.group('⚠️ 錯誤訊息:');
+                result.errors.forEach(err => console.error(err));
+                console.groupEnd();
+            }
+            console.groupEnd();
 
             // Auto-set date range to full range
-            if (parsed.length > 0) {
-                // Find min/max logic could go here if we want default range to match data
+            if (result.messages.length > 0) {
+                const dates = result.messages.map(m => m.date.getTime());
+                const minDate = new Date(Math.min(...dates));
+                const maxDate = new Date(Math.max(...dates));
+                
+                // 設定預設日期範圍
+                dateRange.value.start = minDate.toISOString().split('T')[0];
+                dateRange.value.end = maxDate.toISOString().split('T')[0];
             }
+
+            return result;
         } finally {
             loading.value = false;
         }
@@ -96,6 +132,14 @@ export const useLineStore = defineStore('line', () => {
 
     function reset() {
         messages.value = [];
+        parseStats.value = null;
+        parseErrors.value = [];
+        dateRange.value = { start: null, end: null };
+        timeFilter.value = { start: 0, end: 24 };
+    }
+
+    function clearParseWarnings() {
+        parseErrors.value = [];
     }
 
     return {
@@ -106,7 +150,11 @@ export const useLineStore = defineStore('line', () => {
         filteredMessages,
         stats,
         participants,
+        parseStats,
+        parseErrors,
+        hasParseWarnings,
         loadFile,
-        reset
+        reset,
+        clearParseWarnings
     };
 });
