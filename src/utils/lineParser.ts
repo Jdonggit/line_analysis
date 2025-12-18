@@ -3,7 +3,7 @@ export interface Message {
     date: Date;
     sender: string;
     content: string;
-    type: 'text' | 'sticker' | 'image' | 'video' | 'call' | 'system';
+    type: 'text' | 'sticker' | 'image' | 'video' | 'call' | 'file' | 'system';
 }
 
 export interface ParseResult {
@@ -46,9 +46,9 @@ export function parseLineChat(text: string): ParseResult {
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line = lines[lineIndex];
         if (line === undefined) continue;
-        
+
         const trimmed = line.trim();
-        
+
         if (!trimmed) {
             emptyLines++;
             continue;
@@ -67,16 +67,16 @@ export function parseLineChat(text: string): ParseResult {
         // 優先使用 Tab 分隔（LINE 官方匯出格式）
         // 格式: HH:MM [TAB] SenderName [TAB] Content
         const tabParts = trimmed.split('\t');
-        
+
         let msgParsed = false;
-        
+
         // 方式一：Tab 分隔格式（最準確，支援包含空格的用戶名）
         if (tabParts.length >= 2) {
             const timeStr = tabParts[0] ?? '';
             if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
                 const sender = tabParts[1] ?? '';
                 const content = tabParts.slice(2).join('\t');
-                
+
                 if (currentDate && sender) {
                     const msg = createMessage(++idCounter, currentDate, timeStr, sender, content);
                     if (msg) {
@@ -87,7 +87,7 @@ export function parseLineChat(text: string): ParseResult {
                 }
             }
         }
-        
+
         // 方式二：空格分隔格式（fallback，用戶名不能含空格）
         if (!msgParsed) {
             const spaceMatch = trimmed.match(/^(\d{1,2}:\d{2})\s+([^\s]+)\s*(.*)/);
@@ -95,7 +95,7 @@ export function parseLineChat(text: string): ParseResult {
                 const timeStr = spaceMatch[1] ?? '';
                 const sender = spaceMatch[2] ?? '';
                 const content = spaceMatch[3] ?? '';
-                
+
                 const msg = createMessage(++idCounter, currentDate, timeStr, sender, content);
                 if (msg) {
                     currentMessage = msg;
@@ -112,7 +112,7 @@ export function parseLineChat(text: string): ParseResult {
                 // 這可能是系統訊息或特殊格式
                 const timeStr = minimalMatch[1] ?? '';
                 const rest = minimalMatch[2] ?? '';
-                
+
                 // 檢查是否為系統訊息
                 if (isSystemMessage(rest)) {
                     const msg = createMessage(++idCounter, currentDate, timeStr, 'System', rest);
@@ -156,7 +156,7 @@ export function parseLineChat(text: string): ParseResult {
     if (dateHeaders === 0) {
         errors.push('找不到日期標頭，請確認檔案格式是否正確（需要 YYYY/MM/DD 或 YYYY-MM-DD 格式）');
     }
-    
+
     if (messages.length === 0) {
         if (dateHeaders > 0) {
             errors.push('找到日期但無法解析任何訊息，可能是訊息格式不相容');
@@ -192,7 +192,7 @@ function createMessage(
 ): Message | null {
     const dateTimeStr = `${dateStr} ${timeStr}`;
     const dateObj = new Date(dateTimeStr);
-    
+
     // 驗證日期是否有效
     if (isNaN(dateObj.getTime())) {
         console.warn(`[LineParser] 無效的日期時間: ${dateTimeStr}`);
@@ -213,27 +213,27 @@ function createMessage(
 
 function detectMessageType(content: string): Message['type'] {
     const trimmedContent = content.trim();
-    
+
     // 貼圖
     if (['[Sticker]', '[貼圖]', '貼圖', 'Sticker', '[スタンプ]'].includes(trimmedContent)) {
         return 'sticker';
     }
-    
+
     // 照片/圖片
     if (['[Photo]', '[照片]', '[圖片]', '照片', '圖片', 'Photo', 'Image', '[画像]'].includes(trimmedContent)) {
         return 'image';
     }
-    
+
     // 影片
     if (['[Video]', '[影片]', '影片', 'Video', '[動画]'].includes(trimmedContent)) {
         return 'video';
     }
-    
+
     // 檔案
     if (['[File]', '[檔案]', '檔案', 'File', '[ファイル]'].includes(trimmedContent)) {
-        return 'video'; // 暫時歸類
+        return 'file';
     }
-    
+
     // 通話
     if (
         (content.includes('Call') && (content.includes('Duration') || content.includes('started') || content.includes('Missed'))) ||
@@ -242,7 +242,7 @@ function detectMessageType(content: string): Message['type'] {
     ) {
         return 'call';
     }
-    
+
     return 'text';
 }
 
@@ -255,7 +255,7 @@ function isSystemMessage(text: string): boolean {
         '收回了訊息', 'unsent a message',
         '已建立記事本', '已建立相簿'
     ];
-    
+
     return systemKeywords.some(keyword => text.includes(keyword));
 }
 

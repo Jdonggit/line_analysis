@@ -5,7 +5,7 @@ import { type Message, type ParseResult, parseLineChat } from '../utils/linePars
 export const useLineStore = defineStore('line', () => {
     const messages = ref<Message[]>([]);
     const loading = ref(false);
-    
+
     // 解析結果統計
     const parseStats = ref<ParseResult['stats'] | null>(null);
     const parseErrors = ref<string[]>([]);
@@ -48,6 +48,9 @@ export const useLineStore = defineStore('line', () => {
     const stats = computed(() => {
         const counts: Record<string, number> = {};
         const stickerCounts: Record<string, number> = {};
+        const imageCounts: Record<string, number> = {};
+        const videoCounts: Record<string, number> = {};
+        const fileCounts: Record<string, number> = {};
         const hourlyActivity = new Array(24).fill(0);
         const dayOfWeekActivity = new Array(7).fill(0);
 
@@ -55,9 +58,15 @@ export const useLineStore = defineStore('line', () => {
             // Total count per user
             counts[msg.sender] = (counts[msg.sender] || 0) + 1;
 
-            // Sticker count
+            // Type counts
             if (msg.type === 'sticker') {
                 stickerCounts[msg.sender] = (stickerCounts[msg.sender] || 0) + 1;
+            } else if (msg.type === 'image') {
+                imageCounts[msg.sender] = (imageCounts[msg.sender] || 0) + 1;
+            } else if (msg.type === 'video') {
+                videoCounts[msg.sender] = (videoCounts[msg.sender] || 0) + 1;
+            } else if (msg.type === 'file') {
+                fileCounts[msg.sender] = (fileCounts[msg.sender] || 0) + 1;
             }
 
             // Hourly
@@ -74,9 +83,22 @@ export const useLineStore = defineStore('line', () => {
             .sort((a, b) => b[1] - a[1])
             .map(([name, count]) => ({ name, count }));
 
+        const stickerRanking = Object.entries(stickerCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([name, count]) => ({ name, count }));
+
+        const mediaRanking = Object.entries(counts).map(([name]) => {
+            const img = imageCounts[name] || 0;
+            const vid = videoCounts[name] || 0;
+            const file = fileCounts[name] || 0;
+            return { name, count: img + vid + file, img, vid, file };
+        }).sort((a, b) => b.count - a.count).filter(i => i.count > 0);
+
         return {
             ranking,
             stickerCounts,
+            stickerRanking,
+            mediaRanking,
             hourlyActivity,
             dayOfWeekActivity,
             totalMessages: filteredMessages.value.length,
@@ -99,13 +121,13 @@ export const useLineStore = defineStore('line', () => {
             console.log(`成功解析: ${result.stats.parsedMessages} 則訊息`);
             console.log(`空白行: ${result.stats.emptyLines}`);
             console.log(`跳過/失敗: ${result.stats.skippedLines}`);
-            
+
             if (result.stats.failedLines.length > 0) {
                 console.group('❌ 無法解析的行:');
                 result.stats.failedLines.forEach(line => console.warn(line));
                 console.groupEnd();
             }
-            
+
             if (result.errors.length > 0) {
                 console.group('⚠️ 錯誤訊息:');
                 result.errors.forEach(err => console.error(err));
