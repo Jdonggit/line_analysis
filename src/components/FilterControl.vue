@@ -31,17 +31,17 @@ function updateStore() {
       <!-- Date Range -->
       <div>
         <label class="block text-sm font-medium text-gray-400 mb-2">日期區間</label>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
             <input 
                 type="date" 
                 v-model="store.dateRange.start"
-                class="bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                class="bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-auto"
             >
-            <span class="text-gray-500">to</span>
+            <span class="text-gray-500 text-center sm:text-left">to</span>
              <input 
                 type="date" 
                 v-model="store.dateRange.end"
-                class="bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                class="bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-auto"
             >
         </div>
       </div>
@@ -50,7 +50,7 @@ function updateStore() {
       <div>
         <!-- Display local values for responsiveness -->
         <label class="block text-sm font-medium text-gray-400 mb-2">每日時段 ({{ localStart }}:00 - {{ localEnd }}:00)</label>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col sm:flex-row gap-4">
              <div class="flex-1">
                  <label class="text-xs text-gray-500 mb-1 block">開始時間</label>
                  <input 

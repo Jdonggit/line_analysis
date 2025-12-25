@@ -16,7 +16,7 @@ import {
 } from 'chart.js';
 import { Bar, Line } from 'vue-chartjs';
 import FilterControl from './FilterControl.vue';
-import AIAnalysis from './AIAnalysis.vue';
+// import AIAnalysis from './AIAnalysis.vue';
 import { LayoutDashboard, Sticker, FileVideo } from 'lucide-vue-next';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
@@ -131,11 +131,11 @@ const hourlyData = computed(() => {
     </div>
 
     <!-- Tab Navigation -->
-    <div class="flex gap-2 p-1 bg-neutral-800 rounded-xl border border-neutral-700 w-fit">
+    <div class="flex gap-2 p-1 bg-neutral-800 rounded-xl border border-neutral-700 w-full overflow-x-auto no-scrollbar">
         <button 
             @click="currentTab = 'overview'"
             :class="[
-                'flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all',
+                'flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0',
                 currentTab === 'overview' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-gray-400 hover:text-white hover:bg-neutral-700'
             ]"
         >
@@ -145,7 +145,7 @@ const hourlyData = computed(() => {
         <button 
             @click="currentTab = 'stickers'"
             :class="[
-                'flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all',
+                'flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0',
                 currentTab === 'stickers' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'text-gray-400 hover:text-white hover:bg-neutral-700'
             ]"
         >
@@ -155,7 +155,7 @@ const hourlyData = computed(() => {
         <button 
             @click="currentTab = 'media'"
             :class="[
-                'flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all',
+                'flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0',
                 currentTab === 'media' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:text-white hover:bg-neutral-700'
             ]"
         >
@@ -203,10 +203,10 @@ const hourlyData = computed(() => {
             </div>
         </div>
 
-        <!-- AI Analysis -->
-        <div class="md:col-span-4">
+        <!-- AI Analysis 暫時移除 還未測試 -->
+        <!-- <div class="md:col-span-4">
             <AIAnalysis />
-        </div>
+        </div> -->
       </template>
 
       <!-- Stickers Tab -->

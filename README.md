@@ -35,20 +35,33 @@ This application runs entirely in your browser.
 *   [Pinia](https://pinia.vuejs.org/) (State Management)
 *   [Chart.js](https://www.chartjs.org/) / vue-chartjs
 
-## 🚀 快速開始
+### 使用 Docker 部署 (推薦)
 
-### 安裝依賴
+如果您有安裝 Docker 與 Docker Compose，這是最快速的執行方式：
+
+```bash
+# 啟動服務
+docker-compose up -d --build
+
+# 停止服務
+docker-compose down
+```
+啟動後請訪問 `http://localhost:8080`。
+
+### 傳統手動方式
+
+#### 安裝依賴
 ```bash
 npm install
 ```
 
-### 啟動開發伺服器
+#### 啟動開發伺服器
 ```bash
 npm run dev
 # 瀏覽器打開 http://localhost:5173
 ```
 
-### 建置生產版本
+#### 建置生產版本
 ```bash
 npm run build
 # 產生的 dist/ 資料夾可直接部署至任何靜態網站託管服務 (如 GitHub Pages, Vercel, Netlify)
