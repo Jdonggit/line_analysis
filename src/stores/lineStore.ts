@@ -55,6 +55,9 @@ export const useLineStore = defineStore('line', () => {
         const dayOfWeekActivity = new Array(7).fill(0);
 
         filteredMessages.value.forEach(msg => {
+            // Skip system messages for statistics
+            if (msg.type === 'system') return;
+
             // Total count per user
             counts[msg.sender] = (counts[msg.sender] || 0) + 1;
 
@@ -94,6 +97,8 @@ export const useLineStore = defineStore('line', () => {
             return { name, count: img + vid + file, img, vid, file };
         }).sort((a, b) => b.count - a.count).filter(i => i.count > 0);
 
+        const validMessages = filteredMessages.value.filter(m => m.type !== 'system');
+
         return {
             ranking,
             stickerCounts,
@@ -101,8 +106,8 @@ export const useLineStore = defineStore('line', () => {
             mediaRanking,
             hourlyActivity,
             dayOfWeekActivity,
-            totalMessages: filteredMessages.value.length,
-            daysCount: new Set(filteredMessages.value.map(m => m.date.toDateString())).size
+            totalMessages: validMessages.length,
+            daysCount: new Set(validMessages.map(m => m.date.toDateString())).size
         };
     });
 

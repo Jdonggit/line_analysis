@@ -71,7 +71,7 @@ function updateStore() {
              </div>
         </div>
         <p class="text-xs text-gray-500 mt-2">
-            拖曳滑桿以過濾時段 (放開滑鼠後才會更新統計)。
+            拖曳滑桿以過濾時段
         </p>
       </div>
   </div>

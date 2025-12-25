@@ -207,7 +207,7 @@ function createMessage(
         date: dateObj,
         sender: sender || 'Unknown',
         content: content,
-        type: type
+        type: (sender && isSystemMessage(sender)) ? 'system' : type
     };
 }
 
@@ -243,6 +243,11 @@ function detectMessageType(content: string): Message['type'] {
         return 'call';
     }
 
+    // 系統訊息 / 收回訊息
+    if (['收回了訊息', '已收回訊息', 'unsent a message', 'unsent message'].some(keyword => trimmedContent.includes(keyword))) {
+        return 'system';
+    }
+
     return 'text';
 }
 
@@ -252,7 +257,7 @@ function isSystemMessage(text: string): boolean {
         '更改了群組名稱', '更改了群組圖片',
         'joined the chat', 'left the chat', 'invited', 'removed',
         'changed the group name', 'changed the group photo',
-        '收回了訊息', 'unsent a message',
+        '收回了訊息', '已收回訊息', 'unsent a message', 'unsent message',
         '已建立記事本', '已建立相簿'
     ];
 

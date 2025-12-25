@@ -101,6 +101,10 @@ function dismissWarning() {
       >
     </div>
 
+    <p class="mt-8 text-gray-500 max-w-md text-center text-sm">
+      您的資料僅會在瀏覽器中處理，<span class="text-indigo-400 font-medium whitespace-nowrap">絕不會上傳</span> 到任何伺服器。
+    </p>
+
     <!-- Parse Result Banner -->
     <div v-if="parseResult !== 'idle' && store.parseStats" class="mt-4">
       <!-- Success -->
@@ -260,6 +264,44 @@ function dismissWarning() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="mt-8 sm:mt-12 border-t border-zinc-800 pt-6 sm:pt-8">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-200 mb-4 sm:mb-6 flex items-center gap-2">
+        <UploadCloud class="w-5 h-5 text-indigo-400" />
+        如何匯出 LINE 聊天記錄？
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div class="bg-zinc-800/30 p-4 rounded-xl border border-zinc-700/50">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center font-bold mb-3 text-sm sm:text-base">1</div>
+          <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+            進入 LINE <br/>
+            點選該聊天室的右上角「<span class="text-indigo-400 font-medium">≡</span>」選單
+          </p>
+        </div>
+
+        <div class="bg-zinc-800/30 p-4 rounded-xl border border-zinc-700/50">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center font-bold mb-3 text-sm sm:text-base">2</div>
+          <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+            點擊「<span class="text-indigo-400 font-medium">設定</span>」<br/>
+            並選擇「<span class="text-indigo-400 font-medium">傳送聊天記錄</span>」
+          </p>
+        </div>
+
+        <div class="bg-zinc-800/30 p-4 rounded-xl border border-zinc-700/50">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center font-bold mb-3 text-sm sm:text-base">3</div>
+          <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+            將生成的 <span class="text-indigo-400 font-medium">.txt 檔案</span> <br/>
+            傳送到電腦或手機內並拖放至此
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 bg-amber-900/10 border border-amber-900/30 rounded-lg text-[10px] sm:text-xs text-amber-200/70">
+        <p>💡 提示：匯出的檔案必須為點擊「傳送聊天記錄」後生成的文字檔 (.txt)，直接複製貼上文字將無法解析。</p>
       </div>
     </div>
   </div>

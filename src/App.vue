@@ -19,12 +19,9 @@ const store = useLineStore();
       </div>
     </header>
 
-    <main class="pt-32 sm:pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
-      <div v-if="!store.messages.length" class="h-[calc(100vh-150px)] flex flex-col items-center justify-center">
+    <main class="pt-28 sm:pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
+      <div v-if="!store.messages.length" class="min-h-[calc(100vh-160px)] flex flex-col items-center justify-center py-8">
         <FileDropZone />
-        <p class="mt-8 text-gray-500 max-w-md text-center text-sm">
-          您的資料僅會在瀏覽器中處理，<span class="text-indigo-400 font-medium whitespace-nowrap">絕不會上傳</span> 到任何伺服器。
-        </p>
       </div>
 
       <Dashboard v-else />
